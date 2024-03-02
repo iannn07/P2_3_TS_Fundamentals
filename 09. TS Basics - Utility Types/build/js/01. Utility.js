@@ -1,105 +1,69 @@
 "use strict";
-// Generics in TS
-// Instead of doing this
-function isNumber(value) {
-    return typeof value === "number";
-}
-function isString(value) {
-    return typeof value === "string";
-}
-// We can make them as a generic function
-function isNumberOrString(value) {
-    return typeof value === "number" || typeof value === "string";
-}
-console.log(isNumberOrString(5));
-// Let's try another example
-function isObject(value) {
-    return typeof value === "object" && value !== null && !Array.isArray(value);
-}
-const checkObject = [
-    isObject({}),
-    isObject(5),
-    isObject("5"),
-    isObject(null),
-    isObject(true),
-    isObject([1, 2, 3]),
-];
-checkObject.forEach((value, index) => console.log(`${index + 1}. ${value}`));
-// Data type checks
-const isArrayObj = (value) => {
-    // Checks whether a value is an array and not empty
-    if (Array.isArray(value) && !value.length) {
-        return { value, is: false };
-    }
-    // Checks whether a value is an object and not empty
-    if (isObject(value) && !Object.keys(value).length) {
-        return { value, is: false };
-    }
-    return { value, is: !!value };
+// Utility in TS
+// Partial Types
+const partialAssignment = (assign, updateProp) => {
+    return Object.assign(Object.assign({}, assign), updateProp);
 };
-const checkArrayObj = [[], {}, [1, 2, 3], { name: "Gauss" }, "", 5, true, "5"];
-checkArrayObj.forEach((value) => console.log(isArrayObj(value)));
-const isBool = (value) => {
-    // Checks whether a value is an array and not empty
-    if (Array.isArray(value) && !value.length) {
-        return { value, is: false };
-    }
-    // Checks whether a value is an object and not empty
-    if (isObject(value) && !Object.keys(value).length) {
-        return { value, is: false };
-    }
-    return { value, is: !!value };
+const updatePartialUser = {
+    userID: 1,
+    userName: "John Doe",
+    verified: true,
 };
-const isUserID = (value) => {
+console.log(`Before Update Assignment: ${JSON.stringify(updatePartialUser)}`);
+// Update the verified status
+const updateVerifiedStatus = partialAssignment(updatePartialUser, {
+    verified: false,
+});
+console.log(`After Update Assignment: ${JSON.stringify(updateVerifiedStatus)}`);
+// Required Types
+const updateRequiredUser = (value) => {
     return value;
 };
-console.log(isUserID({ id: 1, name: "Gauss" }));
-const getUserProperty = (user, key) => {
-    return user.map((user) => user[key]);
+console.log(`Required Assignment: ${JSON.stringify(updateRequiredUser(Object.assign(Object.assign({}, updateVerifiedStatus), { userName: "Updated by Required", verified: true })))}`);
+// Readonly Types
+const updateReadonlyUser = Object.assign(Object.assign({}, updateVerifiedStatus), { userName: "Updated by Readonly", verified: true });
+console.log(`Readonly Assignment: ${JSON.stringify(updateReadonlyUser)}`);
+// You can't do the following
+// updateReadonlyUser.verified = false;
+// updateReadonlyUser.userID = 2;
+// updateReadonlyUser.userName = "Jane Doe";
+// Record Types
+const users = {
+    1: {
+        userID: 1,
+        userName: "John Doe",
+        verified: true,
+    },
+    2: {
+        userID: 2,
+        userName: "Jane Doe",
+        verified: false,
+    },
 };
-const user = [
-    {
-        id: 1,
-        name: "Gauss",
-        age: 77,
-        profile: {
-            invention: "Normal Distribution",
-            origin: "German",
-        },
-        status: "Mathematician",
-    },
-    {
-        id: 2,
-        name: "Leibniz",
-        age: 70,
-        profile: {
-            invention: "Binary Number",
-            origin: "German",
-        },
-        status: "Mathematician",
-    },
-];
-console.log(getUserProperty(user, "id"));
-console.log(getUserProperty(user, "profile"));
-// Generic in Class
-class GenericClass {
-    constructor(value) {
-        this.value = value;
-    }
-    get getValue() {
-        return this.value;
-    }
-    set setValue(value) {
-        this.value = value;
-    }
-}
-// Automatically infers to string
-const genericClass = new GenericClass("Gauss");
-console.log(`First Value: ${genericClass.getValue}`);
-genericClass.setValue = "Leibniz";
-console.log(`After Set the Value: ${genericClass.getValue}`);
-// Or you can assert the type
-const genericClassAssertion = new GenericClass("Gauss");
-console.log(`First Value: ${genericClassAssertion.getValue}`);
-genericClassAssertion.setValue = 10;
-console.log(`After Set the Value: ${genericClassAssertion.getValue}`);
+console.log(`Record Assignment: ${JSON.stringify(users)}`);
+const recordUser = {
+    Potter: "verified",
+    Johnson: "unverified",
+};
+const recordUser2 = {
+    Potter: 1,
+    Johnson: 5,
+};
+console.log(`Record Assignment (Verified): ${JSON.stringify(recordUser)}`);
+console.log(`Record Assignment (Satisfied): ${JSON.stringify(recordUser2)}`);
+const dataTypeScore = {
+    userID: 1,
+    userName: "Ian",
+};
+const dataTypeScore2 = {
+    userName: "IAN",
+};
+console.log(`Pick: ${JSON.stringify(dataTypeScore)}`);
+console.log(`Omit: ${JSON.stringify(dataTypeScore2)}`);
+// Return Type
+const createSomethingNew = (title, coin) => {
+    return { title, coin };
+};
+const somethingNew = createSomethingNew("Something New", 500);
+console.log(`Return Type: ${JSON.stringify(somethingNew)}`);
+const somethingNewParam = ["Something New", 500];
